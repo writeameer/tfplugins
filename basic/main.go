@@ -25,7 +25,7 @@ func main() {
 		Logger: hclog.New(&hclog.LoggerOptions{
 			Name:   "plugin",
 			Output: os.Stdout,
-			Level:  hclog.Info,
+			Level:  hclog.Trace,
 		}),
 	})
 	defer client.Kill()

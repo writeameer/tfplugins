@@ -1,6 +1,9 @@
 package common
 
-import "net/rpc"
+import (
+	"net/rpc"
+	"runtime"
+)
 
 // GreeterRPC is an implementation that talks over RPC
 type GreeterRPC struct {
@@ -8,6 +11,7 @@ type GreeterRPC struct {
 }
 
 func (g *GreeterRPC) Greet() string {
+
 	var resp string
 	err := g.client.Call("Plugin.Greet", new(interface{}), &resp)
 	if err != nil {
@@ -19,15 +23,9 @@ func (g *GreeterRPC) Greet() string {
 	return resp
 }
 
-// GreeterRPCServer is an RPC server that GreeterRPC talks to, conforming to
-// the requirements of net/rpc
-type GreeterRPCServer struct {
-	// This is the real implementation
-	Impl Greeter
-}
-
-// Greet implements the Greeter interface
-func (s *GreeterRPCServer) Greet(args interface{}, resp *string) error {
-	*resp = s.Impl.Greet()
-	return nil
+func funcName() string {
+	pc := make([]uintptr, 10) // at least 1 entry needed
+	runtime.Callers(2, pc)
+	f := runtime.FuncForPC(pc[0])
+	return f.Name()
 }

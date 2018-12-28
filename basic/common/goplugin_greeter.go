@@ -17,7 +17,7 @@ type GreeterPlugin struct {
 	Impl Greeter
 }
 
-// Server hould return the RPC server compatible struct to serve
+// Server should return the RPC server compatible struct to serve
 // the methods that the Client calls over net/rpc.
 func (p *GreeterPlugin) Server(*plugin.MuxBroker) (interface{}, error) {
 	return &GreeterRPCServer{Impl: p.Impl}, nil

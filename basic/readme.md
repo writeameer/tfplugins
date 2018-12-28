@@ -30,6 +30,9 @@ $ ./run.sh
 2018/12/28 12:00:45 This is a message from the plugin: message from GreeterHello.Greet!
 ```
 
+## Diagram of the plugin
+
+![Basic Plugin](./images/basic.png)
 
 
 
