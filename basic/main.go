@@ -7,7 +7,7 @@ import (
 
 	hclog "github.com/hashicorp/go-hclog"
 	plugin "github.com/hashicorp/go-plugin"
-	"github.com/writeameer/basic/common"
+	"github.com/writeameer/tfplugins/basic/common"
 )
 
 func main() {
