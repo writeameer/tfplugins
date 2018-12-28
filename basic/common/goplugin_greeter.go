@@ -6,10 +6,12 @@ import (
 	plugin "github.com/hashicorp/go-plugin"
 )
 
-// GreeterPlugin is a plugin.Plugin implementation, with two methods:
+// GreeterPlugin is a plugin.Plugin implementation that embeds our greeter implementation
+// This is the plugin that will be served by the plugin binaries and hosted by the
+// plugin host. plugin.Plugin requires the implementation of the following:
 //
-// Server(*MuxBroker) (interface{}, error)
-// Client(*MuxBroker, *rpc.Client) (interface{}, error)
+// 		Server(*MuxBroker) (interface{}, error)
+// 		Client(*MuxBroker, *rpc.Client) (interface{}, error)
 type GreeterPlugin struct {
 	// Impl Injection
 	Impl Greeter
