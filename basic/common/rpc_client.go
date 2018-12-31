@@ -10,7 +10,7 @@ type GreeterRPC struct {
 	client *rpc.Client
 }
 
-// Call the "Greet" function exposed via rpc_server.go
+// Greet Call the "Greet" function exposed via rpc_server.go
 func (g *GreeterRPC) Greet() string {
 
 	var resp string

@@ -1,5 +1,10 @@
 package common
 
+// Greeter is the interface we expose through the plugin
+type Greeter interface {
+	Greet() string
+}
+
 // GreeterHello is an implementation of Greeter
 type GreeterHello struct{}
 
