@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -11,46 +12,20 @@ import (
 	"github.com/writeameer/tfplugins/terraform/common"
 )
 
+var (
+	client *plugin.Client
+)
+
 func main() {
-	// We're a host! Start by launching the plugin process.
-	client := plugin.NewClient(getConfig())
+	// Launching plugin process.
+	client = plugin.NewClient(getConfig())
 	defer client.Kill()
 
-	// Connect via RPC
-	rpcClient, err := client.Client()
-	if err != nil {
-		log.Fatal(err)
-	}
+	// Get Resource Provider from plugin client
+	resourceProvider := getResourceProvider()
 
-	// Request the plugin
-	raw, err := rpcClient.Dispense("provider")
-	if err != nil {
-		log.Printf("Could not dispense type: %s", err)
-	}
-
-	// We should have a Greeter now! This feels like a normal interface
-	// implementation but is in fact over an RPC connection.
-	resourceProvider := raw.(*common.ResourceProvider)
-
-	// var resp common.ResourceProviderApplyResponse
-
-	// args := &common.ResourceProviderApplyArgs{
-	// 	Info:  &terraform.InstanceInfo{},
-	// 	State: &terraform.InstanceState{},
-	// 	Diff:  &terraform.InstanceDiff{},
-	// }
-
-	var result []terraform.ResourceType
-
-	err = resourceProvider.Client.Call("Plugin.Resources", new(interface{}), &result)
-	if err != nil {
-		log.Printf("the error was: %s", err)
-	}
-
-	for _, resourceType := range result {
-		log.Println(resourceType.Name)
-	}
-
+	// List resource types in plugin
+	listResourceTypes(resourceProvider)
 }
 
 func getConfig() (config *plugin.ClientConfig) {
@@ -67,7 +42,51 @@ func getConfig() (config *plugin.ClientConfig) {
 		Logger: hclog.New(&hclog.LoggerOptions{
 			Name:   "pluginhost",
 			Output: os.Stdout,
-			Level:  hclog.Trace,
+			Level:  hclog.Error,
 		}),
 	}
+}
+
+func getResourceProvider() (resourceProvider *common.ResourceProvider) {
+	// Connect via RPC
+	rpcClient, err := client.Client()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Request the plugin
+	raw, err := rpcClient.Dispense("provider")
+	if err != nil {
+		log.Printf("Could not dispense type: %s", err)
+	}
+
+	// We should have a Greeter now! This feels like a normal interface
+	// implementation but is in fact over an RPC connection.
+	resourceProvider = raw.(*common.ResourceProvider)
+
+	return
+}
+
+func listResourceTypes(resourceProvider *common.ResourceProvider) {
+	var result []terraform.ResourceType
+	err := resourceProvider.Client.Call("Plugin.Resources", new(interface{}), &result)
+	if err != nil {
+		log.Printf("the error was: %s", err)
+	}
+
+	fmt.Printf("\nListing resource types available from plugin: \n")
+	for i, resourceType := range result {
+		fmt.Printf("%d. Resource Type = %s \n", i+1, resourceType.Name)
+	}
+}
+
+func applyProvider() {
+	// var resp common.ResourceProviderApplyResponse
+
+	// args := &common.ResourceProviderApplyArgs{
+	// 	Info:  &terraform.InstanceInfo{},
+	// 	State: &terraform.InstanceState{},
+	// 	Diff:  &terraform.InstanceDiff{},
+	// }
+
 }
