@@ -37,6 +37,17 @@ type ResourceProviderInputArgs struct {
 	Config  *terraform.ResourceConfig
 }
 
+type ResourceProviderApplyArgs struct {
+	Info  *terraform.InstanceInfo
+	State *terraform.InstanceState
+	Diff  *terraform.InstanceDiff
+}
+
+type ResourceProviderApplyResponse struct {
+	State *terraform.InstanceState
+	Error *plugin.BasicError
+}
+
 func (p *ResourceProvider) Stop() error {
 	var resp ResourceProviderStopResponse
 	err := p.Client.Call("Plugin.Stop", new(interface{}), &resp)

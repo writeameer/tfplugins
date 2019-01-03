@@ -32,18 +32,24 @@ func main() {
 	// implementation but is in fact over an RPC connection.
 	resourceProvider := raw.(*common.ResourceProvider)
 
-	request := &terraform.ProviderSchemaRequest{}
+	// var resp common.ResourceProviderApplyResponse
 
-	response, err := resourceProvider.GetSchema(request)
-	//err = resourceProvider.Client.Call("resourceServer", "address", "ameer")
+	// args := &common.ResourceProviderApplyArgs{
+	// 	Info:  &terraform.InstanceInfo{},
+	// 	State: &terraform.InstanceState{},
+	// 	Diff:  &terraform.InstanceDiff{},
+	// }
 
+	var result []terraform.ResourceType
+
+	err = resourceProvider.Client.Call("Plugin.Resources", new(interface{}), &result)
 	if err != nil {
-		log.Printf(err.Error())
+		log.Printf("the error was: %s", err)
 	}
 
-	something := response.Provider.BlockTypes
-
-	log.Printf("The  length is: %d", len(something))
+	for _, resourceType := range result {
+		log.Println(resourceType.Name)
+	}
 
 }
 
