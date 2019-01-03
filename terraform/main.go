@@ -26,6 +26,9 @@ func main() {
 
 	// List resource types in plugin
 	listResourceTypes(resourceProvider)
+
+	//Run the example plugin
+	applyProvider(resourceProvider)
 }
 
 func getConfig() (config *plugin.ClientConfig) {
@@ -42,7 +45,7 @@ func getConfig() (config *plugin.ClientConfig) {
 		Logger: hclog.New(&hclog.LoggerOptions{
 			Name:   "pluginhost",
 			Output: os.Stdout,
-			Level:  hclog.Error,
+			Level:  hclog.Trace,
 		}),
 	}
 }
@@ -80,13 +83,33 @@ func listResourceTypes(resourceProvider *common.ResourceProvider) {
 	}
 }
 
-func applyProvider() {
-	// var resp common.ResourceProviderApplyResponse
+func applyProvider(resourceProvider *common.ResourceProvider) {
+	var resp common.ResourceProviderApplyResponse
 
-	// args := &common.ResourceProviderApplyArgs{
-	// 	Info:  &terraform.InstanceInfo{},
-	// 	State: &terraform.InstanceState{},
-	// 	Diff:  &terraform.InstanceDiff{},
-	// }
+	// These values map to the vlus passed in via test.tf HCL
+	attributesIn := make(map[string]string)
+	attributesIn["address"] = "2.2.2.2"
+	attributesIn["name"] = "example_server"
 
+	args := &common.ResourceProviderApplyArgs{
+		Info: &terraform.InstanceInfo{
+			Type: "dummy_server",
+		},
+		State: &terraform.InstanceState{
+			Attributes: attributesIn,
+		},
+		Diff: &terraform.InstanceDiff{},
+	}
+
+	err := resourceProvider.Client.Call("Plugin.Apply", args, &resp)
+
+	if err != nil {
+		log.Printf("The error was %s \n", err.Error())
+	}
+	if resp.Error != nil {
+		err = resp.Error
+		log.Printf("The error response was %s \n", err)
+	}
+
+	log.Println(resp.State)
 }
