@@ -22,13 +22,24 @@ func main() {
 	defer client.Kill()
 
 	// Get Resource Provider from plugin client
-	resourceProvider := getResourceProvider()
+	resourceProvider := getResourceProvider(client)
 
 	// List resource types in plugin
 	listResourceTypes(resourceProvider)
 
 	//Run the example plugin
 	applyProvider(resourceProvider)
+
+	// Launching azure plugin process.
+	azureClient := plugin.NewClient(getAzureConfig())
+	defer azureClient.Kill()
+
+	// Get Azure resource provider from plugin client
+	azureResourceProvider := getResourceProvider(azureClient)
+
+	// List resource types in plugin
+	listResourceTypes(azureResourceProvider)
+
 }
 
 func getConfig() (config *plugin.ClientConfig) {
@@ -50,7 +61,26 @@ func getConfig() (config *plugin.ClientConfig) {
 	}
 }
 
-func getResourceProvider() (resourceProvider *common.ResourceProvider) {
+func getAzureConfig() (config *plugin.ClientConfig) {
+	return &plugin.ClientConfig{
+		HandshakeConfig: plugin.HandshakeConfig{
+			ProtocolVersion:  4,
+			MagicCookieKey:   "TF_PLUGIN_MAGIC_COOKIE",
+			MagicCookieValue: "d602bf8f470bc67ca7faa0386276bbdd4330efaf76d1a219cb4d6991ca9872b2",
+		},
+		Plugins: map[string]plugin.Plugin{
+			"provider": &common.ResourceProviderPlugin{},
+		},
+		Cmd: exec.Command("./terraform-provider-azurerm"),
+		Logger: hclog.New(&hclog.LoggerOptions{
+			Name:   "pluginhost",
+			Output: os.Stdout,
+			Level:  hclog.Trace,
+		}),
+	}
+}
+
+func getResourceProvider(client *plugin.Client) (resourceProvider *common.ResourceProvider) {
 	// Connect via RPC
 	rpcClient, err := client.Client()
 	if err != nil {

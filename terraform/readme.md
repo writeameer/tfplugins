@@ -66,3 +66,21 @@ The following extract:
 
 is the result of a "Plugin.Apply" and the output above are debug traces emited directly by the code in our sample plugin.
 
+## Listing Azure Proivder resource types
+
+The plugin host also launches the [Azure RM Terraform Provider](https://github.com/terraform-providers/terraform-provider-azurerm) and lists the resource types it provides:
+
+
+```
+Listing resource types available from plugin:
+1. Resource Type = azurerm_api_management
+2. Resource Type = azurerm_app_service
+3. Resource Type = azurerm_app_service_active_slot
+4. Resource Type = azurerm_app_service_custom_hostname_binding
+5. Resource Type = azurerm_app_service_plan
+6. Resource Type = azurerm_app_service_slot
+.
+.
+.
+```
+
