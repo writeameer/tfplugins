@@ -4,7 +4,7 @@
 mkdir -p ./bin
 
 # Build Plugin
-go build -o ./bin/plugin ./plugin/main.go
+go build -o ./bin/plugin ./plugin/*.go
 chmod +x ./bin/plugin
 # Build Host
 go build -o ./bin/main ./main.go
